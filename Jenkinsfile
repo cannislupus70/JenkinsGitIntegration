@@ -17,18 +17,6 @@ pipeline {
                 echo("Run integration tests using Selenium")
                 //sh 'selenium-runner --config test/config.json'
             }
-            post{
-                success {
-                    mail to: "nevilsukhadiya1234@gmail.com",
-                    subject: "Test Status Email",
-                    body: "Test was successful!"
-                }
-                failure{
-                    mail to: "nevilsukhadiya1234@gmail.com",
-                    subject: "Test Status Email",
-                    body: "Test was failed"
-                }
-            }
         }
 
         stage('Code Analysis') {
@@ -44,19 +32,7 @@ pipeline {
             steps {
                 echo("Perform a security scan using OWASP ZAP")
                 //sh 'zap-baseline.py -t http://localhost:8080/myapp -r report.html'
-            }
-            post{
-                success {
-                    mail to: "nevilsukhadiya1234@gmail.com",
-                    subject: "Scan Status Email",
-                    body: "Scan was successful!"
-                }
-                failure{
-                    mail to: "nevilsukhadiya1234@gmail.com",
-                    subject: "Scan Status Email",
-                    body: "Scan was failed"
-                }
-            }
+            } 
         }
 
         stage('Deploy to Staging') {
