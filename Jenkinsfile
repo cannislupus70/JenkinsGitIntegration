@@ -6,7 +6,16 @@ pipeline {
             steps {
                 echo("Build the code using Maven") 
                 //sh 'mvn clean package'
-            }   
+            }
+            post {
+                always {
+                    // send email notification with attached build logs
+                     emailext body: 'Build logs are attached', 
+                     subject: 'Build Status - ${currentBuild.currentResult}',
+                     attachmentsPattern: '**/*.log', 
+                     to: 'nevilsukhadiya1234@gmail.com'
+                }
+            }
         }
 
         stage('Unit and Integration Tests') {
@@ -16,6 +25,20 @@ pipeline {
 
                 echo("Run integration tests using Selenium")
                 //sh 'selenium-runner --config test/config.json'
+            }
+            post{
+                success {
+                    emailext attachLog: true, 
+                        body: 'Test was successful', 
+                        subject: 'Test status email', 
+                        to: 'nevilsukhadiya1234@gmail.com'
+                }
+                failure {
+                    emailext attachLog: true, 
+                        body: 'Test was Failed', 
+                        subject: 'Test status email', 
+                        to: 'nevilsukhadiya1234@gmail.com'
+                }                                
             }
         }
 
@@ -32,7 +55,21 @@ pipeline {
             steps {
                 echo("Perform a security scan using OWASP ZAP")
                 //sh 'zap-baseline.py -t http://localhost:8080/myapp -r report.html'
-            } 
+            }
+            post{
+                success {
+                    emailext attachLog: true, 
+                        body: 'Scan was successful', 
+                        subject: 'Scan status email', 
+                        to: 'nevilsukhadiya1234@gmail.com'
+                }
+                failure {
+                    emailext attachLog: true, 
+                        body: 'Scan was Failed', 
+                        subject: 'Scan status email', 
+                        to: 'nevilsukhadiya1234@gmail.com'
+                }                                
+            }
         }
 
         stage('Deploy to Staging') {
@@ -41,15 +78,7 @@ pipeline {
                 //sh 'docker build -t myapp .'
                 //sh 'docker run -d --name myapp-staging -p 8080:8080 myapp'
             }
-            post{
-                success {
-                    emailext attachLog: true, 
-                        body: 'Test was successful', 
-                        subject: 'Test status email', 
-                        to: 'nevilsukhadiya1234@gmail.com'
-                }
-                
-            }
+            
         }
 
         stage('Integration Tests on Staging') {
