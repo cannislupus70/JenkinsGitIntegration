@@ -40,5 +40,10 @@ pipeline {
         echo "Deploying the application to $PRODUCTION_ENVIRONMENT"
       }
     }
+    stage('complete') {
+      steps {
+        echo "complete"
+      }
+    }
   }
 }
