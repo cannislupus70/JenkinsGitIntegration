@@ -74,6 +74,16 @@ pipeline {
                 //sh 'docker build -t myapp .'
                 //sh 'docker run -d --name myapp-staging -p 8080:8080 myapp'
             }
+            post{
+                success {
+                    emailext attachLog: true, 
+                    body: 'Test was Successful', 
+                    replyTo: 'nevilsukhadiya1234@gmail.com', 
+                    subject: 'Test status email', 
+                    to: 'nevilsukhadiya1234@gmaill.com'
+                }
+                
+            }
         }
 
         stage('Integration Tests on Staging') {
