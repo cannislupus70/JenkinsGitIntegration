@@ -1,49 +1,95 @@
 pipeline {
-  agent any
-  
-  environment {
-    DIRECTORY_PATH = "/Users/cannis_lupus/Desktop/SIT753 PROFESSIONAL PRACTICE"
-    TESTING_ENVIRONMENT = "test sight"
-    PRODUCTION_ENVIRONMENT = "NEVIL SUKHADIYA"
-  }
-  
-  stages {
-    stage('Build') {
-      steps {
-        echo "Fetch the source code from the directory path $DIRECTORY_PATH"
-        echo "Compile the code and generate any necessary artifacts"
-      }
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo("Build the code using Maven") 
+                //sh 'mvn clean package'
+            }
+            post {
+                always {
+            // send email notification with attached build logs
+                     emailext body: 'Build logs are attached', 
+                     subject: 'Build Status - ${currentBuild.currentResult}',
+                     attachmentsPattern: '**/*.log', 
+                     to: 'nevilsukhadiya1234@gmail.com'
+                }
+            }
+        }
+
+        stage('Unit and Integration Tests') {
+            steps {
+                echo("Run unit tests using JUnit, which will ensure code fucnctions as expected") 
+               // sh 'mvn test'
+
+                echo("Run integration tests using Selenium")
+                //sh 'selenium-runner --config test/config.json'
+            }
+            post{
+                success {
+                    mail to: "nevilsukhadiya1234@gmail.com",
+                    subject: "Test Status Email",
+                    body: "Test was successful!"
+                }
+                failure{
+                    mail to: "nevilsukhadiya1234@gmail.com",
+                    subject: "Test Status Email",
+                    body: "Test was failed"
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                echo("Analyze the code using SonarQube")
+                //withSonarQubeEnv('SonarQube') {
+                  //  sh 'mvn sonar:sonar'
+                //}
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo("Perform a security scan using OWASP ZAP")
+                //sh 'zap-baseline.py -t http://localhost:8080/myapp -r report.html'
+            }
+            post{
+                success {
+                    mail to: "nevilsukhadiya1234@gmail.com",
+                    subject: "Scan Status Email",
+                    body: "Scan was successful!"
+                }
+                failure{
+                    mail to: "nevilsukhadiya1234@gmail.com",
+                    subject: "Scan Status Email",
+                    body: "Scan was failed"
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo("Deploy the application to a staging server using Docker")
+                //sh 'docker build -t myapp .'
+                //sh 'docker run -d --name myapp-staging -p 8080:8080 myapp'
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo("Run integration tests on the staging environment using Selenium")
+                //sh 'selenium-runner --config test/config-staging.json'
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo("Deploy the application to a production server using Docker")
+                /*sh 'docker stop myapp-staging'
+                sh 'docker rm myapp-staging'
+                sh 'docker run -d --name myapp-production -p 80:8080 myapp'*/
+            }
+        }
     }
-    stage('Test') {
-      steps {
-        echo "Running unit tests"
-        echo "Running integration tests"
-      }
-    }
-    stage('Code Quality Check') {
-      steps {
-        echo "Checking the quality of the code"
-      }
-    }
-    stage('Deploy') {
-      steps {
-        echo "Deploying the application to $TESTING_ENVIRONMENT"
-      }
-    }
-    stage('Approval') {
-      steps {
-        sleep time: 10, unit: 'SECONDS'
-      }
-    }
-    stage('Deploy to Production') {
-      steps {
-        echo "Deploying the application to $PRODUCTION_ENVIRONMENT"
-      }
-    }
-    stage('complete') {
-      steps {
-        echo "complete"
-      }
-    }
-  }
 }
