@@ -9,13 +9,23 @@ pipeline {
             }
             post {
                 always {
-            // send email notification with attached build logs
+                    // send email notification with attached build logs
                      emailext body: 'Build logs are attached', 
                      subject: 'Build Status - ${currentBuild.currentResult}',
                      attachmentsPattern: '**/*.log', 
                      to: 'nevilsukhadiya1234@gmail.com'
                 }
             }
+            post {
+                success {
+                    emailext attachmentsPattern: '**/*.log', 
+                    body: 'Build is successful', 
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']], 
+                    subject: 'Build was successful', 
+                    to: 'nevilsukhadiya1234@gmail.com'
+        }
+    }
         }
 
         stage('Unit and Integration Tests') {
@@ -89,12 +99,6 @@ pipeline {
                 /*sh 'docker stop myapp-staging'
                 sh 'docker rm myapp-staging'
                 sh 'docker run -d --name myapp-production -p 80:8080 myapp'*/
-            }
-        }
-        stage('complete') {
-            steps {
-                echo("completed")
-              
             }
         }
     }
