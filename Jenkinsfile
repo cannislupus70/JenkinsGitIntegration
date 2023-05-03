@@ -16,16 +16,6 @@ pipeline {
                      to: 'nevilsukhadiya1234@gmail.com'
                 }
             }
-            post {
-                success {
-                    emailext attachmentsPattern: '**/*.log', 
-                    body: 'Build is successful', 
-                    recipientProviders: [[$class: 'DevelopersRecipientProvider'],
-                    [$class: 'RequesterRecipientProvider']], 
-                    subject: 'Build was successful', 
-                    to: 'nevilsukhadiya1234@gmail.com'
-        }
-    }
         }
 
         stage('Unit and Integration Tests') {
@@ -83,6 +73,16 @@ pipeline {
                 echo("Deploy the application to a staging server using Docker")
                 //sh 'docker build -t myapp .'
                 //sh 'docker run -d --name myapp-staging -p 8080:8080 myapp'
+            }
+            post {
+                success {
+                    emailext attachmentsPattern: '**/*.log', 
+                    body: 'Build is successful', 
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']], 
+                    subject: 'Build was successful', 
+                    to: 'nevilsukhadiya1234@gmail.com'
+                }
             }
         }
 
