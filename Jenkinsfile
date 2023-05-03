@@ -87,5 +87,10 @@ pipeline {
                 sh 'docker run -d --name myapp-production -p 80:8080 myapp'*/
             }
         }
+        stage('completed') {
+            steps {
+                echo("Completed") 
+            }  
+        }
     }
 }
