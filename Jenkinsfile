@@ -7,15 +7,6 @@ pipeline {
                 echo("Build the code using Maven") 
                 //sh 'mvn clean package'
             }
-            post {
-                always {
-                    // send email notification with attached build logs
-                     emailext body: 'Build logs are attached', 
-                     subject: 'Build Status - ${currentBuild.currentResult}',
-                     attachmentsPattern: '**/*.log', 
-                     to: 'nevilsukhadiya1234@gmail.com'
-                }
-            }
         }
 
         stage('Unit and Integration Tests') {
